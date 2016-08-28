@@ -8,68 +8,88 @@ requirejs.config({
 		cssroot: '../../css'
 	},
 })
-require(['vue', 'app/page', 'app/sidenav'], function(Vue, page, sidenav) {
-	Vue.component('enovelhub-page', page)
-	Vue.component('enovelhub-sidenav', sidenav)
-	new Vue({
-		el: '#app',
-		data: {
-			appName: 'enovelhub',
-			content: [{
-				title: 'this is title 0',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 1',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 2',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 3',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 4',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 5',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 6',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 7',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 8',
-				content: ['line 0', 'line 1', 'line 2']
-			}, {
-				title: 'this is title 9',
-				content: ['line 0', 'line 1', 'line 2']
-			}]
-		},
-		computed: {
-			titles: function() {
-				var titles = new Array()
-				for (i = 0; i < this.content.length; i++) {
-					titles[i] = this.content[i].title
-				}
+require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
+	function($, Vue, page, sidenav, navbar) {
+		Vue.component('enovelhub-page', page)
+		Vue.component('enovelhub-sidenav', sidenav)
+		Vue.component('enovelhub-navbar', navbar)
 
-				return titles
+		var app = new Vue({
+			el: '#app',
+			ready: function() {
+				this.$broadcast('navbar-progress', 80)
+				$.get('testdata.json', function(data) {
+					app.book = data
+					app.$broadcast('navbar-progress', 100)
+
+				})
 			},
-		},
-		events: {
-			'select-page': function(index) {
-				location.href = '#' + this.appName + '-page-' + index
+			data: {
+				appName: 'enovelhub',
+				book: {
+					author: "author",
+					title: "book title",
+					content: [{
+						title: 'chapter title',
+						content: ['content 0', 'line 1', 'line 2']
+					}],
+				},
+				css: {
+					author: {
+						float: 'right',
+						fontSize: 'small',
+						marginRight: '2rem',
+						textAlign: 'center',
+					},
+					index: {
+						float: 'left',
+						marginLeft: '2rem',
+						textAlign: 'center',
+					},
+					title: {
+						float: 'right',
+						textAlign: 'center',
+						marginRight: '2rem',
+					}
+				},
 			},
-			'show-sidenav': function() {
-				this.$broadcast('show-sidenav')
-			}
-		},
-		template: `
+			computed: {
+				titles: function() {
+					var titles = new Array()
+					for (i = 0; i < this.book.content.length; i++) {
+						titles[i] = this.book.content[i].title
+					}
+					return titles
+				},
+			},
+			events: {
+				'select-page': function(index) {
+					var selector = '#{appName}-page-{index}'
+						.replace(/{appName}/g, this.$root.appName)
+						.replace(/{index}/g, index)
+					$('html,body').animate({
+						scrollTop: $(selector).offset().top - 100
+					}, 500)
+					this.$broadcast('navbar-progress', 100)
+					this.$broadcast('hide-sidenav')
+				},
+				'show-sidenav': function() {
+					this.$broadcast('show-sidenav')
+				}
+			},
+			template: `
+		<enovelhub-navbar>
+			<slot>
+				<span :style="css.index" @click="this.$emit('show-sidenav')">Index</span>
+				<span :style="css.author">by.{{ book.author }}</span>
+				<span :style="css.title">{{ book.title }}</span>
+			</slot>
+		</enovelhub-navbar>
 		<enovelhub-sidenav :titles="titles"></enovelhub-sidenav>
-		<template v-for="page in content">
+		<template v-for="page in book.content">
 			<enovelhub-page :num="$index" :page="page"></enovelhub-page>
 		</template>
 		`,
+		})
+
 	})
-})
