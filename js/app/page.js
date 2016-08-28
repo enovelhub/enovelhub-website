@@ -1,13 +1,9 @@
 define(function(require) {
-    var Vue = require('vue')
     require('css!cssroot/app/page')
+    var Vue = require('vue')
 
     return Vue.extend({
         props: {
-            prefix: {
-                type: String,
-                required: true,
-            },
             num: {
                 type: Number,
                 require: true,
@@ -34,12 +30,12 @@ define(function(require) {
             }
         },
         computed: {
-            cssId: function() {
-                return '#' + this.prefix + '-' + this.num
-            }
+            prefix: function() {
+                return this.$root.appName
+            },
         },
         template: `
-        <div id="{{ prefix }}-{{ num }}" class="{{ prefix }}">
+        <div id="{{ prefix }}-page-{{ num }}" class="{{ prefix }}-page">
             <div class="chapter">
                     <div class="title">{{ page.title }}</div>
                     <div class="content">
