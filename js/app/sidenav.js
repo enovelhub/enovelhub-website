@@ -18,9 +18,6 @@ define(function(require) {
                 },
             }
         },
-        propsData: {
-            isShow: true,
-        },
         computed: {
             prefix: function() {
                 return this.$root.appName
