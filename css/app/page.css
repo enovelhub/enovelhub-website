@@ -1,0 +1,34 @@
+.enovelhub-page
+.chapter {
+  max-width: 50rem;
+  margin: auto auto 2rem;
+  padding: 2rem;
+  background-color: linen;
+  color: #333;
+  border-radius: 0.2rem;
+  box-shadow: 0 5px 16px 0 #333;
+  font-family: sans-serif;
+}
+
+.enovelhub-page
+.chapter .title {
+  text-align: center;
+  font-size: 150%;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.enovelhub-page
+.chapter .content {
+  padding: 0 2rem;
+}
+
+.enovelhub-page
+.chapter .content p {
+  text-indent: 1.5rem;
+}
+
+.enovelhub-page
+.chapter .content p:first-child::first-letter {
+  font-size: xx-large;
+}

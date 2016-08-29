@@ -1,0 +1,42 @@
+.enovelhub-sidenav {
+    width: 20rem;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    font-family: sans-serif;
+    overflow: auto;
+}
+
+.enovelhub-sidenav
+.title {
+    display: block;
+    font-size: 200%;
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: linen;
+}
+
+.enovelhub-sidenav
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+
+.enovelhub-sidenav
+ul li {
+    display: block;
+    margin: 0;
+    padding: 1rem 2rem;
+    color: linen;
+}
+
+.enovelhub-sidenav ul li:hover,
+.enovelhub-sidenav ul li[now] {
+    color: #333;
+    background-color: linen;
+}
