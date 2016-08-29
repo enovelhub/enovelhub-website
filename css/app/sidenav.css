@@ -6,6 +6,7 @@
     left: 0;
     background-color: #333;
     font-family: sans-serif;
+    overflow: auto;
 }
 
 .enovelhub-sidenav
@@ -23,6 +24,7 @@ ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    display: block;
 }
 
 .enovelhub-sidenav
@@ -33,8 +35,8 @@ ul li {
     color: linen;
 }
 
-.enovelhub-sidenav
-ul li:hover {
+.enovelhub-sidenav ul li:hover,
+.enovelhub-sidenav ul li[now] {
     color: #333;
     background-color: linen;
 }

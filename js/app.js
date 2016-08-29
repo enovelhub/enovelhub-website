@@ -17,11 +17,27 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
 		var app = new Vue({
 			el: '#app',
 			ready: function() {
-				this.$broadcast('navbar-progress', 80)
-				$.get('testdata.json', function(data) {
-					app.book = data
-					app.$broadcast('navbar-progress', 100)
+				var self = this
+				$.get('testdata.json', function(book) {
+					app.book.author = book.author
+					app.book.title = book.title
+					app.book.content = new Array(book.content.length)
+					var updateContent = function(index, length) {
+						if (index == length) {
+							app.$broadcast('navbar-progress', 100)
+							app.autoUpdatePageIndex()
+							return
+						}
 
+						app.book.content.$set(index, book.content[index])
+						Vue.nextTick(function() {
+							app.$broadcast('navbar-progress', index / length * 100)
+							setTimeout(function() {
+								updateContent(index + 1, length)
+							}, 0)
+						})
+					}
+					updateContent(0, book.content.length)
 				})
 			},
 			data: {
@@ -61,6 +77,38 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
 					}
 					return titles
 				},
+			},
+			methods: {
+				autoUpdatePageIndex: function() {
+					var self = this
+					var updateIndex = function(index) {
+						self.$broadcast('sidenav-index', index)
+					}
+					var autoUpdatePageIndex = function() {
+						var docScrollTop = $(document).scrollTop()
+						var min = Number.MAX_SAFE_INTEGER;
+						var id = ""
+
+						var pages = $('.{appName}-page'
+							.replace(/{appName}/g, self.$root.appName)
+						).each(function() {
+							var v = $(this).offset().top + $(this).height() - docScrollTop
+							if (v > 0 && Math.abs(v) < min) {
+								min = v
+								id = $(this).attr('id')
+							}
+						})
+
+						index = id.replace(/.*-page-/g, "") - 0
+						updateIndex(index)
+
+						setTimeout(function() {
+							autoUpdatePageIndex()
+						}, 500)
+					}
+
+					autoUpdatePageIndex()
+				}
 			},
 			events: {
 				'select-page': function(index) {
