@@ -20,15 +20,29 @@
 
 .enovelhub-page
 .chapter .content {
-  padding: 0 2rem;
+    padding: 0 2rem;
 }
 
-.enovelhub-page
-.chapter .content p {
-  text-indent: 1.5rem;
+
+@media screen and (max-width: 600px) {
+    .enovelhub-page
+    .chapter {
+        padding: 2rem 0;
+    }
+    .enovelhub-page
+    .chapter .content {
+        padding: 0 1rem;
+    }
+
+
 }
 
 .enovelhub-page
 .chapter .content p:first-child::first-letter {
   font-size: xx-large;
+}
+
+.enovelhub-page
+.chapter .content p {
+      text-indent: 1.5rem;
 }

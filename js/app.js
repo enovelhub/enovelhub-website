@@ -8,8 +8,10 @@ requirejs.config({
 		cssroot: '../../css'
 	},
 })
-require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
-	function($, Vue, page, sidenav, navbar) {
+require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar',
+		'app/bookmark'
+	],
+	function($, Vue, page, sidenav, navbar, bookmark) {
 		Vue.component('enovelhub-page', page)
 		Vue.component('enovelhub-sidenav', sidenav)
 		Vue.component('enovelhub-navbar', navbar)
@@ -18,27 +20,15 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
 			el: '#app',
 			ready: function() {
 				var self = this
-				$.get('testdata.json', function(book) {
-					app.book.author = book.author
-					app.book.title = book.title
-					app.book.content = new Array(book.content.length)
-					var updateContent = function(index, length) {
-						if (index == length) {
-							app.$broadcast('navbar-progress', 100)
-							app.autoUpdatePageIndex()
-							return
-						}
+				var book = bookmark.loadLastRead()
+				if (book) {
+					self.loadBookPages(book, bookmark.getLastRead().index)
+				} else {
+					$.get('testdata.json', function(book) {
+						self.loadBookPages(book, 0)
+					})
+				}
 
-						app.book.content.$set(index, book.content[index])
-						Vue.nextTick(function() {
-							app.$broadcast('navbar-progress', index / length * 100)
-							setTimeout(function() {
-								updateContent(index + 1, length)
-							}, 0)
-						})
-					}
-					updateContent(0, book.content.length)
-				})
 			},
 			data: {
 				appName: 'enovelhub',
@@ -79,6 +69,32 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
 				},
 			},
 			methods: {
+				loadBookPages: function(book, lastReadIndex) {
+					var self = this
+					bookmark.save(book)
+					bookmark.setLastRead(book.author, book.title, 0)
+
+					self.book.author = book.author
+					self.book.title = book.title
+					self.book.content = new Array(book.content.length)
+					var updateContent = function(index, length) {
+						if (index == length) {
+							self.$broadcast('navbar-progress', 100)
+							self.$emit('select-page', lastReadIndex)
+							self.autoUpdatePageIndex()
+							return
+						}
+
+						self.book.content.$set(index, book.content[index])
+						Vue.nextTick(function() {
+							self.$broadcast('navbar-progress', index / length * 100)
+							setTimeout(function() {
+								updateContent(index + 1, length)
+							}, 0)
+						})
+					}
+					updateContent(0, book.content.length)
+				},
 				autoUpdatePageIndex: function() {
 					var self = this
 					var updateIndex = function(index) {
@@ -101,6 +117,8 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar'],
 
 						index = id.replace(/.*-page-/g, "") - 0
 						updateIndex(index)
+						bookmark.setLastRead(bookmark.getLastRead().author,
+							bookmark.getLastRead().name, index)
 
 						setTimeout(function() {
 							autoUpdatePageIndex()
