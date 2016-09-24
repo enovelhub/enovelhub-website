@@ -95,6 +95,9 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar',
 					}
 					updateContent(0, book.content.length)
 				},
+				clearCache: function() {
+					bookmark.clear()
+				},
 				autoUpdatePageIndex: function() {
 					var self = this
 					var updateIndex = function(index) {
@@ -148,7 +151,7 @@ require(['jquery', 'vue', 'app/page', 'app/sidenav', 'app/navbar',
 			<slot>
 				<span :style="css.index" @click="this.$emit('show-sidenav')">Index</span>
 				<span :style="css.author">by.{{ book.author }}</span>
-				<span :style="css.title">{{ book.title }}</span>
+				<span :style="css.title" @click="clearCache()">{{ book.title }}</span>
 			</slot>
 		</enovelhub-navbar>
 		<enovelhub-sidenav :titles="titles"></enovelhub-sidenav>
